@@ -23,8 +23,8 @@
         
         .board {
             background-color: #ccc;
-            width: 600px;
-            height: 600px;
+            width: 90vw;
+            height: 75vh;
             margin: auto;
         }
         
@@ -34,14 +34,14 @@
         
         .cell {
             float: left;
-            height: 200px;
-            width: 200px;
+            height: 25vh;
+            width: 30vw;
         }
         
         .content {
             margin: 10px;
-            width: 180px;
-            height: 180px;
+            width: 27vw;
+            height: 22vh;
             background-color: #555;
             cursor: pointer;
             font-size: 80px;
@@ -115,39 +115,65 @@
         var field;
         var waiting = true;
         var myround = null;
+        var stop = false;
 
         function showPage() {
             document.getElementById("loadingdiv").style.display = "none";
             document.getElementById("game").style.display = "block";
         }
 
+        function checkWin(){
+            if(!stop)
+                $.post(
+                    url = 'http://thetictactoe.altervista.org/update.php?idgame=0MH4Z0Y1Sl',
+                    data = {
+                        "idgame": "<?php echo $GAME->getId(); ?>",
+                        "request": "CHECK_WIN",
+                        "player" : "<?php echo $PLAYER->getId(); ?>"
+                    },
+                    function(data){
+                        if(data == "WIN"){
+                            stop = true;
+                            alert("HAI VINTO");
+                            window.location.href='http://thetictactoe.altervista.org/search.php?';
+                        }
+                        if(data == "LOSE"){
+                            stop = true;
+                            alert("HAI PERSO");
+                            window.location.href='http://thetictactoe.altervista.org/search.php?';
+                        }
+                        if(data == "DRAW"){
+                            alert("HAI PAREGGIATO");
+                            window.location.href='http://thetictactoe.altervista.org/search.php?';
+                        }
+                    }
+                );
+        }
         function getField() {
+            if(!stop)
             $.post(
-                url = 'http://localhost/Online-multiplayer-Tic-Tac-Toe/update.php?idgame=0MH4Z0Y1Sl',
+                url = 'http://thetictactoe.altervista.org/update.php?idgame=0MH4Z0Y1Sl',
                 data = {
                     "idgame": "<?php echo $GAME->getId(); ?>",
                     "request": "GET_FIELD",
                     "player" : "<?php echo $PLAYER->getId(); ?>"
                 },
                 function(data) {
-                    if(data == "WIN"){
-                        alert("HAI VINTO");
-                        window.location.href='http://localhost/Online-multiplayer-Tic-Tac-Toe/search.php?';
-                    }
-                    if(data == "LOSE"){
-                        alert("HAI PERSO");
-                        window.location.href='http://localhost/Online-multiplayer-Tic-Tac-Toe/search.php?';
-                    }
+                    
                     data = JSON.parse(data);
                     field = data;
                     refreshField();
+                    checkWin();
+                    
+
                 }
             )
         }
 
         function updateField(row, column, onfinish) {
+            if(!stop)
             $.post(
-                url = 'http://localhost/Online-multiplayer-Tic-Tac-Toe/update.php?idgame=0MH4Z0Y1Sl',
+                url = 'http://thetictactoe.altervista.org/update.php?idgame=0MH4Z0Y1Sl',
                 data = {
                     "idgame": "<?php echo $GAME->getId(); ?>",
                     "player": "<?php echo $PLAYER->getId(); ?>",
@@ -165,14 +191,16 @@
         }
 
         function playerHandler(){
+            if(!stop)
             $.post(
-                url = 'http://localhost/Online-multiplayer-Tic-Tac-Toe/update.php?idgame=0MH4Z0Y1Sl',
+                url = 'http://thetictactoe.altervista.org/update.php?idgame=0MH4Z0Y1Sl',
                 data = {
                     "idgame": "<?php echo $GAME->getId(); ?>",
                     "request": "GET_PLAYER_ROUND",
                     "player" : "<?php echo $PLAYER->getId(); ?>",
                 },
                 function(data) {
+                    
                     console.log(data);
                     if(waiting && data == "true" || data == "false"){
                             waiting = false;
@@ -236,7 +264,7 @@
         
         
 
-        setInterval(playerHandler, 100);
+        setInterval(playerHandler, 300);
         jQuery(document).ready(function() {
 
             getField(refreshField);
@@ -264,10 +292,12 @@
     
 
     <div id="game" style="display:none">
+    <!--
         <div>
             ID_GAME : <?php echo $GAME->getId(); ?><br>
             ID_PLAYER : <?php echo $PLAYER->getId(); ?><br>     
         </div>
+    -->
         <div class="title">
             <h5><span id="playerLabel"></span></h5>
         </div>

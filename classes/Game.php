@@ -18,6 +18,7 @@ class Game{
             $this->started = false;
             $this->finished = false;
             $this->winner = -1;
+            $this->draw = false;
             $this->field = [
                 [-1, -1, -1], 
                 [-1, -1, -1], 
@@ -73,6 +74,10 @@ class Game{
     
     public function getPlayers(){
         return $this->players;
+    }
+
+    public function getDraw(){
+        return $this->draw;
     }
 
     public function getWinner(){
@@ -152,8 +157,20 @@ class Game{
         return $this->round;
        
     }
+
+    public function checkDraw(){
+        for($i = 0; $i < 3; $i++){
+            for($j = 0; $j < 3; $j++){
+                if($this->field[$i][$j] == -1)
+                    return false;
+            }
+        }
+        $this->draw = true;
+    }
     
     public function checkWin(){
+
+        $this->checkDraw();
         
         //diagonals
         if($this->field[0][0] != -1 && $this->field[0][0] == $this->field[1][1] && $this->field[1][1] == $this->field[2][2])
@@ -210,6 +227,7 @@ class Game{
         $this->started = $json->started;
         $this->finished = $json->finished;
         $this->winner = $json->winner;
+        $this->draw = $json->draw;
         $this->field = $json->field;
     
     }
@@ -226,6 +244,7 @@ class Game{
         $data["started"] = $this->started;
         $data["finished"] = $this->finished;
         $data["winner"] = $this->winner;
+        $data["draw"] = $this->draw;
         $data["field"] = $this->field;
         return $data;
     }

@@ -41,16 +41,7 @@ $REQUEST = $_POST["request"];
 switch($REQUEST){
 
     case 'GET_FIELD':
-        if(!is_null($GAME->getWinner())){
-                
-            $winner = $GAME->getWinner();
-            if($winner->getId() == $PLAYER->getId())
-                echo "WIN";
-            else    
-                echo "LOSE";
-            
-        die();
-        }
+        
         
         echo json_encode($GAME->getField());
         break;
@@ -58,16 +49,6 @@ switch($REQUEST){
     case "UPDATE_FIELD":
         if($GAME->move($PLAYER, $_POST["row"], $_POST["column"])){
             $GAME->save();
-            if(!is_null($GAME->getWinner())){
-
-                $winner = $GAME->getWinner();
-                if($winner->getId() == $PLAYER->getId())
-                    echo "WIN";
-                else    
-                    echo "LOSE";
-                
-            die();
-            }
             echo "true";
         }            
         else
@@ -75,6 +56,7 @@ switch($REQUEST){
         break;
     
     case "GET_PLAYER_ROUND":
+
         if($GAME->isStarted()){
             if($GAME->isPlayerRound($PLAYER))
                 echo "true";
@@ -82,6 +64,22 @@ switch($REQUEST){
                 echo "false";
         }
         
+        break;
+    
+    case "CHECK_WIN":
+        if(!is_null($GAME->getWinner())){
+
+            $winner = $GAME->getWinner();
+            if($winner->getId() == $PLAYER->getId())
+                echo "WIN";
+            else    
+                echo "LOSE";
+            
+        }else{
+            if($GAME->getDraw()){
+                echo "DRAW";
+            }
+        }
         break;
 }
 
