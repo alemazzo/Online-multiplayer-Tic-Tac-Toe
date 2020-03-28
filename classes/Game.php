@@ -29,11 +29,15 @@ class Game{
     }
     
     
-    public static function LoadFromId($id){
+    public static function LoadFromId($id, $random = true){
         //to implement
         $game = new Game($id);
-    
-        $filepath = 'data/' . $game->getId() . '.game';
+        
+        if($random)
+            $filepath = 'random/' . $game->getId() . '.game';
+        if(!$random)
+            $filepath = 'games/' . $game->getId() . '.game';
+            
         if(!file_exists($filepath))
             return NULL;
         $file = fopen($filepath, 'r');
@@ -249,10 +253,13 @@ class Game{
         return $data;
     }
     
-    public function save(){
+    public function save($random = true){
         $jsonString = json_encode($this->toObject());
-    
-        $filepath = 'data/' . $this->id . '.game';
+        
+        if($random)
+            $filepath = 'random/' . $this->id . '.game';
+        if(!$random)
+            $filepath = 'games/' . $this->id . '.game';
         $file = fopen($filepath, 'w');
         fwrite($file, $jsonString);
         fclose($file);

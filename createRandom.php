@@ -22,21 +22,19 @@ if(is_null($IDGAME)){
     $GAME = new Game();
     
     //Create the player
-    $PLAYER = $GAME->newPlayer();
+    //$PLAYER = $GAME->newPlayer();
 
     //Save the game
     $GAME->save();
 
     //Save the user
-    $PLAYER->save();
+    //$PLAYER->save();
 
     //Get the IDGAME
     $IDGAME = $GAME->getId();
 
     //Push the game in the Queue
     $QUEUE->push($IDGAME);
-
-    
 
 }
 
@@ -45,4 +43,4 @@ $QUEUE->save();
 
 //I have the id of the game in queue
 //Now i redirect the user to join the game
-header("Location: http://localhost/Online-multiplayer-Tic-Tac-Toe/play.php?idgame={$IDGAME}");
+header("Location: http://localhost/Online-multiplayer-Tic-Tac-Toe/joinRandom.php?idgame={$IDGAME}");
