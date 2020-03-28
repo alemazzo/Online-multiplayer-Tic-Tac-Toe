@@ -1,11 +1,3 @@
-<?php 
-
-/*
-Join the game with the specify id
-if found redirect to game.php with the found gameid
-else create a new game and then redirect to game.php with 
-the created gameid.
-*/
 
 function RandomString($len)
 {
@@ -113,4 +105,3 @@ if($game->connected < 2){
 $gameData["player"] = $_SESSION["player"];
 
 require("tictactoe.php");
-?>

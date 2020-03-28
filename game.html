@@ -109,27 +109,38 @@
 
 
     <script type="text/javascript">
-        var player = "<?php echo $gameData["player"]; ?>";
+        
+        var player = "<?php echo $PLAYER->getId(); ?>";
         var EMPTY = -1;
         var field;
         var waiting = true;
+        var myround = null;
 
         function showPage() {
             document.getElementById("loadingdiv").style.display = "none";
             document.getElementById("game").style.display = "block";
         }
 
-        function getField(onfinish) {
+        function getField() {
             $.post(
                 url = 'http://localhost/Online-multiplayer-Tic-Tac-Toe/update.php?idgame=0MH4Z0Y1Sl',
                 data = {
-                    "idgame": "<?php echo $gameData["idgame"]; ?>",
-                    "request": "GET_FIELD"
+                    "idgame": "<?php echo $GAME->getId(); ?>",
+                    "request": "GET_FIELD",
+                    "player" : "<?php echo $PLAYER->getId(); ?>"
                 },
                 function(data) {
+                    if(data == "WIN"){
+                        alert("HAI VINTO");
+                        window.location.href='http://localhost/Online-multiplayer-Tic-Tac-Toe/search.php?';
+                    }
+                    if(data == "LOSE"){
+                        alert("HAI PERSO");
+                        window.location.href='http://localhost/Online-multiplayer-Tic-Tac-Toe/search.php?';
+                    }
                     data = JSON.parse(data);
                     field = data;
-                    onfinish();
+                    refreshField();
                 }
             )
         }
@@ -138,8 +149,8 @@
             $.post(
                 url = 'http://localhost/Online-multiplayer-Tic-Tac-Toe/update.php?idgame=0MH4Z0Y1Sl',
                 data = {
-                    "idgame": "<?php echo $gameData["idgame"]; ?>",
-                    "player": "<?php echo $gameData["player"];?>",
+                    "idgame": "<?php echo $GAME->getId(); ?>",
+                    "player": "<?php echo $PLAYER->getId(); ?>",
                     "request": "UPDATE_FIELD",
                     "row": row,
                     "column": column,
@@ -147,29 +158,47 @@
                 },
                 function(data) {
                     onfinish();
+                    
+                    
                 }
             );
         }
 
         function playerHandler(){
-            getField(refreshField);
             $.post(
                 url = 'http://localhost/Online-multiplayer-Tic-Tac-Toe/update.php?idgame=0MH4Z0Y1Sl',
                 data = {
-                    "idgame": "<?php echo $gameData["idgame"]; ?>",
-                    "request": "GET_PLAYER",
-                    "player" : "<?php echo $gameData["player"];?>",
+                    "idgame": "<?php echo $GAME->getId(); ?>",
+                    "request": "GET_PLAYER_ROUND",
+                    "player" : "<?php echo $PLAYER->getId(); ?>",
                 },
                 function(data) {
                     console.log(data);
-                    if(waiting && data == "1" || data == "0"){
+                    if(waiting && data == "true" || data == "false"){
                             waiting = false;
                             showPage();
                     }
-                    if(data == "1")
-                        turnoMio();
-                    else if(data == "0")
-                        turnoAvversario();
+                    if(myround != null){
+                        if(data == "true" && !myround){
+                            myround = true;
+                            turnoMio();
+                        }
+                        else if(data == "false" && myround){
+                            myround = false;
+                            turnoAvversario();
+                        }
+                    }else{
+                        if(data == "true"){
+                            myround = true;
+                            turnoMio();
+                        }
+                        else if(data == "false"){
+                            myround = false;
+                            turnoAvversario();
+                        }
+                    }
+                    
+                        
                 }
             );
         }
@@ -183,101 +212,12 @@
         }
 
         function turnoMio(){
+            getField();
             $("#playerLabel").html("Mio turno");
             for (var i = 0; i < 3; i++)
                 for (var j = 0; j < 3; j++)
                     $("#" + ((i * 3) + j)).attr('disabled', false);
     
-        }
-
-        function fine() {
-        }
-
-        function checkWin() {
-            var countPlayer1 = 0;
-            var countPlayer2 = 0;
-
-
-            //cerco lungo le righe
-            for (var i = 0; i < 3; i++) {
-                countPlayer1 = 0;
-                countPlayer2 = 0;
-                for (var j = 0; j < 3; j++) {
-                    countPlayer1 += field[i][j] == players[0].value ? 1 : 0;
-                    countPlayer2 += field[i][j] == players[1].value ? 1 : 0;
-                }
-                if (countPlayer1 == 3) {
-
-                    alert("vince " + players[0].name);
-                    fine();
-                    return;
-                } else if (countPlayer2 == 3) {
-                    alert("vince " + players[1].name);
-                    fine();
-                    return;
-                }
-
-            }
-
-            //cerco lungo le colonne
-            for (var i = 0; i < 3; i++) {
-                countPlayer1 = 0;
-                countPlayer2 = 0;
-                for (var j = 0; j < 3; j++) {
-                    countPlayer1 += field[j][i] == players[0].value ? 1 : 0;
-                    countPlayer2 += field[j][i] == players[1].value ? 1 : 0;
-                }
-                if (countPlayer1 == 3) {
-
-                    alert("vince " + players[0].name);
-                    fine();
-                    return;
-                } else if (countPlayer2 == 3) {
-                    alert("vince " + players[1].name);
-                    fine();
-                    return;
-                }
-
-            }
-
-            //diagonale principale
-            countPlayer1 = 0;
-            countPlayer2 = 0;
-            for (var i = 0; i < 3; i++) {
-                countPlayer1 += field[i][i] == players[0].value ? 1 : 0;
-                countPlayer2 += field[i][i] == players[1].value ? 1 : 0;
-            }
-
-            if (countPlayer1 == 3) {
-
-                alert("vince " + players[0].name);
-                fine();
-                return;
-            } else if (countPlayer2 == 3) {
-                alert("vince " + players[1].name);
-                fine();
-                return;
-            }
-
-            //diagonale secondaria
-            countPlayer1 = 0;
-            countPlayer2 = 0;
-            for (var i = 0; i < 3; i++) {
-                countPlayer1 += field[i][2 - i] == players[0].value ? 1 : 0;
-                countPlayer2 += field[i][2 - i] == players[1].value ? 1 : 0;
-            }
-
-            if (countPlayer1 == 3) {
-
-                alert("vince " + players[0].name);
-                fine();
-                return;
-            } else if (countPlayer2 == 3) {
-                alert("vince " + players[1].name);
-                fine();
-                return;
-            }
-
         }
 
         
@@ -291,10 +231,6 @@
                 }
         }
 
-        function next() {
-            getField(refreshField);
-
-        }
 
         
         
@@ -308,7 +244,7 @@
                 var id = $(this).attr('id');
                 var column = id % 3;
                 var row = parseInt(id / 3);
-                updateField(row, column, next);                
+                updateField(row, column, getField);                
             });
 
             
@@ -329,8 +265,8 @@
 
     <div id="game" style="display:none">
         <div>
-            ID_GAME : <?php echo $gameData["idgame"];?><br>
-            ID_PLAYER : <?php echo $gameData["player"];?><br>     
+            ID_GAME : <?php echo $GAME->getId(); ?><br>
+            ID_PLAYER : <?php echo $PLAYER->getId(); ?><br>     
         </div>
         <div class="title">
             <h5><span id="playerLabel"></span></h5>

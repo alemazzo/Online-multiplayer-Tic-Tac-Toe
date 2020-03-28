@@ -1,60 +1,88 @@
 <?php
-    function update($games){
 
-        $myfile = fopen("data/games.json", "w");
-        fwrite($myfile, $games);
-        fclose($myfile);
+require("classes/Game.php");
+require("classes/Player.php");
 
-    }
-
-    function getGame($games, $id){
-        $index = -1;
-        for($i = 0; $i < count($games); $i++){
-            if($games[$i]->id == $id){
-                $index = $i;
-                break;
-            }
-        }
-        return $index;
-    }
-
-    $idgame = $_POST["idgame"];
-    
-    $myfile = fopen("data/games.json", "r");
-    $games = json_decode(fread($myfile, filesize("data/games.json")));
-    fclose($myfile);   
-
-    $index = getGame($games, $idgame);
-    $game = $games[$index];
-    
-    if($game->connected == 2){
-        //DO NOTHING UNTIL TWO PLAYER ARE CONNECTED
-        $request = $_POST["request"];
-        switch($request){
-            case "GET_FIELD":
-                echo json_encode($game->field);
-                break;
-            case "UPDATE_FIELD":
-                
-                $name = $_POST["player"];
-                $player = $game->players[0]->name == $name ? $game->players[0] : $game->players[1];
-                if($game->field[$_POST["row"]][$_POST["column"]] == -1){
-                    $game->field[$_POST["row"]][$_POST["column"]] = $player->value;
-
-                    //cambio turno
-                    $game->players[0]->turno = !$game->players[0]->turno;
-                    $game->players[1]->turno = !$game->players[1]->turno;
-                    update(json_encode($games));
-                }
-
-                break;
-            case "GET_PLAYER":
-                    $i = $game->players[0]->turno == true ? 0 : 1;
-                    echo $game->players[$i]->name == $_POST["player"] ? "1" : "0";
-                    break;
-        }
-    }
-
-    
+//Check idgame parameter
+if(!isset($_POST["idgame"])){
+    echo 'unset idgame';
     die();
+}
+
+//Check request parameter
+if(!isset($_POST["request"])){
+    echo 'unset request';
+    die();
+}
+
+//Check player parameter
+if(!isset($_POST["player"])){
+    echo 'unset player';
+    die();
+}
+
+
+$GAME = Game::LoadFromId($_POST["idgame"]);
+if(is_null($GAME)){
+    echo 'game not found';
+    die();
+    //To redirect to search page
+}
+
+$PLAYER = $GAME->getPlayer($_POST["player"]);
+if(is_null($GAME)){
+    echo 'invalid player';
+    die();
+    //To redirect to search page
+}
+
+$REQUEST = $_POST["request"];
+
+switch($REQUEST){
+
+    case 'GET_FIELD':
+        if(!is_null($GAME->getWinner())){
+                
+            $winner = $GAME->getWinner();
+            if($winner->getId() == $PLAYER->getId())
+                echo "WIN";
+            else    
+                echo "LOSE";
+            
+        die();
+        }
+        
+        echo json_encode($GAME->getField());
+        break;
+    
+    case "UPDATE_FIELD":
+        if($GAME->move($PLAYER, $_POST["row"], $_POST["column"])){
+            $GAME->save();
+            if(!is_null($GAME->getWinner())){
+
+                $winner = $GAME->getWinner();
+                if($winner->getId() == $PLAYER->getId())
+                    echo "WIN";
+                else    
+                    echo "LOSE";
+                
+            die();
+            }
+            echo "true";
+        }            
+        else
+            echo "false";
+        break;
+    
+    case "GET_PLAYER_ROUND":
+        if($GAME->isStarted()){
+            if($GAME->isPlayerRound($PLAYER))
+                echo "true";
+            else    
+                echo "false";
+        }
+        
+        break;
+}
+
 ?>
