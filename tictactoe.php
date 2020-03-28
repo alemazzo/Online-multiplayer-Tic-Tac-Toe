@@ -115,13 +115,13 @@
         var waiting = true;
 
         function showPage() {
-            document.getElementById("loader").style.display = "none";
+            document.getElementById("loadingdiv").style.display = "none";
             document.getElementById("game").style.display = "block";
         }
 
         function getField(onfinish) {
             $.post(
-                url = 'http://localhost/tic-tac-toe/update.php?idgame=0MH4Z0Y1Sl',
+                url = 'http://localhost/Online-multiplayer-Tic-Tac-Toe/update.php?idgame=0MH4Z0Y1Sl',
                 data = {
                     "idgame": "<?php echo $gameData["idgame"]; ?>",
                     "request": "GET_FIELD"
@@ -136,7 +136,7 @@
 
         function updateField(row, column, onfinish) {
             $.post(
-                url = 'http://localhost/tic-tac-toe/update.php?idgame=0MH4Z0Y1Sl',
+                url = 'http://localhost/Online-multiplayer-Tic-Tac-Toe/update.php?idgame=0MH4Z0Y1Sl',
                 data = {
                     "idgame": "<?php echo $gameData["idgame"]; ?>",
                     "player": "<?php echo $gameData["player"];?>",
@@ -154,14 +154,14 @@
         function playerHandler(){
             getField(refreshField);
             $.post(
-                url = 'http://localhost/tic-tac-toe/update.php?idgame=0MH4Z0Y1Sl',
+                url = 'http://localhost/Online-multiplayer-Tic-Tac-Toe/update.php?idgame=0MH4Z0Y1Sl',
                 data = {
                     "idgame": "<?php echo $gameData["idgame"]; ?>",
                     "request": "GET_PLAYER",
                     "player" : "<?php echo $gameData["player"];?>",
                 },
                 function(data) {
-                    
+                    console.log(data);
                     if(waiting && data == "1" || data == "0"){
                             waiting = false;
                             showPage();
@@ -319,11 +319,12 @@
 
 <body>
     
-    <div style="width: 100%; text-align: center; color: white; font-size:50px;">
+    <div id="loadingdiv" style="width: 100%; text-align: center; color: white; font-size:50px;">
         <p>In attesa di un altro giocatore</p>
+        <div id="loader">
+        </div>
     </div>
-    <div id="loader">
-    </div>
+    
     
 
     <div id="game" style="display:none">
