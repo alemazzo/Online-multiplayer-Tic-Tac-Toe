@@ -101,6 +101,17 @@ class Game{
         }
         return $player;
     }
+
+    public function getEnemy($id){
+        $player = $this->getPlayer($id);
+        if(!is_null($player)){
+            if($this->players[0]->getId() == $player->getId())
+                return $this->players[1];
+            else
+                return $this->players[0];
+        }
+        return null;
+    }
     
     public function isStarted(){
         return $this->started;
@@ -148,8 +159,14 @@ class Game{
         $p = new Player(null, count($this->players) == 0 ? 'X' : 'O');
         array_push($this->players, $p);
     
-        if(count($this->players) == 2)
+        if(count($this->players) == 2){
+            $this->players[0]->updateLastMove();
+            $this->players[1]->updateLastMove();
+            $this->players[0]->updateTimeStamp();
+            $this->players[1]->updateTimeStamp();
             $this->started = true;
+        }
+            
     
         return $p;
     }
@@ -158,6 +175,7 @@ class Game{
 
         
         $this->round = ($this->round + 1) % 2;
+        $this->players[$this->round]->updateLastMove();
         return $this->round;
        
     }
@@ -207,8 +225,10 @@ class Game{
     public function move($player, $row, $column){
         //implement
         if($this->isPlayerRound($player))
-            if($this->isCellFree($row, $column))
+            if($this->isCellFree($row, $column)){
                 $this->setCell($row, $column, $player->getValue());
+            }
+               
             else
                 return false;            
         else
@@ -233,17 +253,45 @@ class Game{
             ];
         }else{
             //This is executed once the second player has been rematched
+            $this->players[0]->updateLastMove();
+            $this->players[1]->updateLastMove();
+            $this->players[0]->updateTimeStamp();
+            $this->players[1]->updateTimeStamp();
             $this->started = true;
         }
         
     }
     
+    public function updatePlayerTimeStamp($player){
+        if($this->isPlayer($player)){
+            for($i = 0; $i < count($this->players); $i++){
+                if($this->players[$i]->getId() == $player->getId()){
+                    $this->players[$i]->updateTimeStamp();
+                    break;
+                }
+            }
+        }
+        
+    }
+
+    public function updatePlayerLastMove($player){
+        if($this->isPlayer($player)){
+            for($i = 0; $i < count($this->players); $i++){
+                if($this->players[$i]->getId() == $player->getId()){
+                    $this->players[$i]->updateLastMove();
+                    break;
+                }
+            }
+        }
+        
+    }
+
     
     public function fromJson($json){
         //Id is alredy set
         $this->players = array();
         for($i = 0; $i < count($json->players); $i++){
-            $p = new Player($json->players[$i]->id, $json->players[$i]->value);
+            $p = Player::fromJson($json->players[$i]);
             array_push($this->players, $p);
         }
         $this->round = $json->round;

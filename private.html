@@ -166,6 +166,7 @@
                             else window.location.href = 'http://localhost/Online-multiplayer-Tic-Tac-Toe/';
                         }
                         if (data == "DRAW") {
+                            stop = true;
                             alert("HAI PAREGGIATO");
                             var res = confirm("Do you want to rematch?");
                             if (res) window.location.href = 'http://localhost/Online-multiplayer-Tic-Tac-Toe/joinPrivate.php?idgame=<?php echo $GAME->getId();?>&rematch&player=<?php echo $PLAYER->getId();?>';
@@ -225,7 +226,16 @@
                         "player": "<?php echo $PLAYER->getId(); ?>",
                     },
                     function(data) {
-
+                        if (data == "DISCONNECTED") {
+                            alert("L'avversario si è disconnesso");
+                            stop = true;
+                            window.location.href = 'http://localhost/Online-multiplayer-Tic-Tac-Toe/';
+                        }
+                        if (data == "AFK") {
+                            alert("L'avversario è AFK");
+                            stop = true;
+                            window.location.href = 'http://localhost/Online-multiplayer-Tic-Tac-Toe/';
+                        }
                         console.log(data);
                         if (waiting && data == "true" || data == "false") {
                             waiting = false;
@@ -270,7 +280,6 @@
                     $("#" + ((i * 3) + j)).attr('disabled', false);
 
         }
-
 
         function refreshField() {
 

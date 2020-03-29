@@ -36,7 +36,9 @@ if(is_null($GAME)){
     //To redirect to search page
 }
 
+
 $REQUEST = $_POST["request"];
+$GAME->updatePlayerTimeStamp($PLAYER);
 
 switch($REQUEST){
 
@@ -47,17 +49,30 @@ switch($REQUEST){
         break;
     
     case "UPDATE_FIELD":
+        $GAME->updatePlayerLastMove($PLAYER);
         if($GAME->move($PLAYER, $_POST["row"], $_POST["column"])){
-            $GAME->save($_GET["random"]);
             echo "true";
         }            
         else
             echo "false";
+        $GAME->save(false);
         break;
     
     case "GET_PLAYER_ROUND":
-
+        //Check if user is active
+        
         if($GAME->isStarted()){
+            $lasttimestamp = time() - $GAME->getEnemy($PLAYER->getId())->getTimeStamp();
+            $lastmove = time() - $GAME->getEnemy($PLAYER->getId())->getLastMove();
+            if($lasttimestamp > 5){
+                echo "DISCONNECTED";
+                die();
+            }
+            if($lastmove > 10 && !$GAME->isPlayerRound($PLAYER)){
+                echo "AFK";
+                die();
+            }
+            $GAME->save(false);
             if($GAME->isPlayerRound($PLAYER))
                 echo "true";
             else    

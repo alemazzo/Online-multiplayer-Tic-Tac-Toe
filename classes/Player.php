@@ -4,7 +4,7 @@ class Player{
     private $id;
     private $value;
 
-    public function __construct($id, $value){
+    public function __construct($id, $value, $timestamp = null, $lastmove = null){
         if(is_null($id)){
             $this->id = $this->randomString(10);
             $this->value = $value;
@@ -12,9 +12,23 @@ class Player{
             $this->id = $id;
             $this->value = $value;
         }
+        if(is_null($timestamp))
+            $this->timestamp = time();
+        else
+            $this->timestamp = $timestamp;
+        
+        if(is_null($lastmove))
+            $this->lastmove = time();
+        else
+            $this->lastmove = $lastmove;
         
     } 
 
+
+    public static function FromJson($json){
+        $player = new Player($json->id, $json->value, $json->timestamp, $json->lastmove);
+        return $player;
+    }
 
     public static function FromSession(){
         session_start();
@@ -24,6 +38,7 @@ class Player{
         }
         return NULL;
     }
+
 
     //Utility
     
@@ -48,6 +63,14 @@ class Player{
         return $this->value;
     }
 
+    public function getTimeStamp(){
+        return $this->timestamp;
+    }
+
+    public function getLastMove(){
+        return $this->lastmove;
+    }
+
     //Function
 
     public function save(){
@@ -59,7 +82,17 @@ class Player{
         $data = array();
         $data["id"] = $this->id;
         $data["value"] = $this->value;
+        $data["timestamp"] = $this->timestamp;
+        $data["lastmove"] = $this->lastmove;
         return $data;
+    }
+
+    public function updateTimeStamp(){
+        $this->timestamp = time();
+    }
+
+    public function updateLastMove(){
+        $this->lastmove = time();
     }
 
 }
