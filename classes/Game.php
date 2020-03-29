@@ -190,8 +190,8 @@ class Game{
         if($this->field[1][0] != -1 && $this->field[1][0] == $this->field[1][1] && $this->field[1][1] == $this->field[1][2])
             $this->winner = $this->field[1][0] == 'X' ? 0 : 1;
             
-        if($this->field[2][0] != -1 && $this->field[2][0] == $this->field[2][1] && $this->field[2][1]== $this->field[2][2])
-            $this->winnerr = $this->field[2][0] == 'X' ? 0 : 1;
+        if($this->field[2][0] != -1 && $this->field[2][0] == $this->field[2][1] && $this->field[2][1] == $this->field[2][2])
+            $this->winner = $this->field[2][0] == 'X' ? 0 : 1;
         
         //columns
         if($this->field[0][0] != -1 && $this->field[0][0] == $this->field[1][0] && $this->field[1][0] == $this->field[2][0])
@@ -217,6 +217,25 @@ class Game{
         $this->checkWin();
         $this->nextRound();
         return true;
+    }
+
+    public function reset(){
+        if($this->winner != -1 || $this->draw){
+            $this->round = rand(0, 1);
+            $this->started = false;
+            $this->finished = false;
+            $this->winner = -1;
+            $this->draw = false;
+            $this->field = [
+                [-1, -1, -1], 
+                [-1, -1, -1], 
+                [-1, -1, -1]
+            ];
+        }else{
+            //This is executed once the second player has been rematched
+            $this->started = true;
+        }
+        
     }
     
     

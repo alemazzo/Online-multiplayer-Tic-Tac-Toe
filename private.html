@@ -144,7 +144,7 @@
         function checkWin() {
             if (!stop)
                 $.post(
-                    url = 'http://localhost/Online-multiplayer-Tic-Tac-Toe/updatePrivate.php?idgame=0MH4Z0Y1Sl',
+                    url = 'http://localhost/Online-multiplayer-Tic-Tac-Toe/updatePrivate.php',
                     data = {
                         "idgame": "<?php echo $GAME->getId(); ?>",
                         "request": "CHECK_WIN",
@@ -154,25 +154,30 @@
                         if (data == "WIN") {
                             stop = true;
                             alert("HAI VINTO");
-                            window.location.href = 'http://localhost/Online-multiplayer-Tic-Tac-Toe/';
+                            var res = confirm("Do you want to rematch?");
+                            if (res) window.location.href = 'http://localhost/Online-multiplayer-Tic-Tac-Toe/joinPrivate.php?idgame=<?php echo $GAME->getId();?>&rematch&player=<?php echo $PLAYER->getId();?>';
+                            else window.location.href = 'http://localhost/Online-multiplayer-Tic-Tac-Toe/';
                         }
                         if (data == "LOSE") {
                             stop = true;
                             alert("HAI PERSO");
-                            window.location.href = 'http://localhost/Online-multiplayer-Tic-Tac-Toe/';
+                            var res = confirm("Do you want to rematch?");
+                            if (res) window.location.href = 'http://localhost/Online-multiplayer-Tic-Tac-Toe/joinPrivate.php?idgame=<?php echo $GAME->getId();?>&rematch&player=<?php echo $PLAYER->getId();?>';
+                            else window.location.href = 'http://localhost/Online-multiplayer-Tic-Tac-Toe/';
                         }
                         if (data == "DRAW") {
                             alert("HAI PAREGGIATO");
-                            window.location.href = 'http://localhost/Online-multiplayer-Tic-Tac-Toe/';
+                            var res = confirm("Do you want to rematch?");
+                            if (res) window.location.href = 'http://localhost/Online-multiplayer-Tic-Tac-Toe/joinPrivate.php?idgame=<?php echo $GAME->getId();?>&rematch&player=<?php echo $PLAYER->getId();?>';
+                            else window.location.href = 'http://localhost/Online-multiplayer-Tic-Tac-Toe/';
                         }
-                    }
-                );
+                    });
         }
 
         function getField() {
             if (!stop)
                 $.post(
-                    url = 'http://localhost/Online-multiplayer-Tic-Tac-Toe/updatePrivate.php?idgame=0MH4Z0Y1Sl',
+                    url = 'http://localhost/Online-multiplayer-Tic-Tac-Toe/updatePrivate.php?',
                     data = {
                         "idgame": "<?php echo $GAME->getId(); ?>",
                         "request": "GET_FIELD",
@@ -193,7 +198,7 @@
         function updateField(row, column, onfinish) {
             if (!stop)
                 $.post(
-                    url = 'http://localhost/Online-multiplayer-Tic-Tac-Toe/updatePrivate.php?idgame=0MH4Z0Y1Sl',
+                    url = 'http://localhost/Online-multiplayer-Tic-Tac-Toe/updatePrivate.php?',
                     data = {
                         "idgame": "<?php echo $GAME->getId(); ?>",
                         "player": "<?php echo $PLAYER->getId(); ?>",
@@ -213,7 +218,7 @@
         function playerHandler() {
             if (!stop)
                 $.post(
-                    url = 'http://localhost/Online-multiplayer-Tic-Tac-Toe/updatePrivate.php?idgame=0MH4Z0Y1Sl',
+                    url = 'http://localhost/Online-multiplayer-Tic-Tac-Toe/updatePrivate.php?',
                     data = {
                         "idgame": "<?php echo $GAME->getId(); ?>",
                         "request": "GET_PLAYER_ROUND",
@@ -277,7 +282,7 @@
                 }
         }
 
-        
+
 
         setInterval(playerHandler, 300);
         jQuery(document).ready(function() {
@@ -300,7 +305,8 @@
 <body>
 
     <div id="loadingdiv" style="width: 100%; text-align: center; color: white; font-size:20px;">
-        <p>ID GAME : <?php echo $GAME->getId(); ?> </p>
+        <p>ID GAME :
+            <?php echo $GAME->getId(); ?> </p>
         <div id="loader">
         </div>
     </div>

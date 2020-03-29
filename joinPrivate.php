@@ -19,12 +19,20 @@ if(is_null($GAME)){
     die();
 }
 
-$PLAYER = $GAME->newPlayer();
-if(is_null($PLAYER)){
-    echo 'game is full';
-    die();
-    //to redirect to search page
+if(isset($_GET["rematch"]) && isset($_GET["player"])){
+    //Rematch
+    $GAME->reset();
+    $PLAYER = $GAME->getPlayer($_GET["player"]);
+
+}else{
+    $PLAYER = $GAME->newPlayer();
+    if(is_null($PLAYER)){
+        echo 'game is full';
+        die();
+        //to redirect to search page
+    }
 }
+
 
 //the user is successfully registered to the game
 //Save the player in the session variable
