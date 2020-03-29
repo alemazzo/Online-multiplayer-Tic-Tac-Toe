@@ -41,6 +41,6 @@ if(isset($_GET["rematch"]) && isset($_GET["player"])){
 //save the game
 $GAME->save(false);
 
-require("private.html");
+require("private.php");
 
 ?>

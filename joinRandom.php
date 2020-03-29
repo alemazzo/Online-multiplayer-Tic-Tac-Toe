@@ -47,5 +47,5 @@ $GAME->save();
 //Now i have the GAME variable and the PLAYER variable
 //successfully setted.
 
-require("random.html");
+require("random.php");
 ?>
